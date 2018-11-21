@@ -23,14 +23,14 @@ namespace TAC.Dto
         {
             get
             {
-                return LastConnectedOn.HasValue ? LastConnectedOn.Value.ToString("MMM ddd d HH:mm yyyy") : string.Empty;
+                return LastConnectedOn.HasValue ? LastConnectedOn.Value.ToString("yyyy MMM ddd d HH:mm:ss") : string.Empty;
             }
         }
         public string ConnectedOnDateTimeString
         {
             get
             {
-                return ConnectedOn.HasValue ? ConnectedOn.Value.ToString("MMM ddd d HH:mm yyyy") : string.Empty;
+                return ConnectedOn.HasValue ? ConnectedOn.Value.ToString("yyyy MMM ddd d HH:mm:ss") : string.Empty;
             }
         }
     }

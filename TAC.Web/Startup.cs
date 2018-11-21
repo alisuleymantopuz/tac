@@ -34,7 +34,6 @@ namespace TAC.Web
         {
             services.AddDbContext<AppDbContext>(opts => opts.UseInMemoryDatabase("TAC"), ServiceLifetime.Transient);
             services.AddSingleton<Microsoft.Extensions.Hosting.IHostedService, VehicleAvailabilityCheckerService>();
-            services.AddSingleton<Microsoft.Extensions.Hosting.IHostedService, VehicleStatusUpdateMachineryService>();
             services.AddAutoMapper();
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
