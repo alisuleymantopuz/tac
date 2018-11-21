@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Autofac" Version="4.8.1" />
+    <PackageReference Include="FluentValidation" Version="8.0.100" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\TAC.Domain.Infrastructure\TAC.Domain.Infrastructure.csproj" />
+    <ProjectReference Include="..\TAC.Domain\TAC.Domain.csproj" />
+    <ProjectReference Include="..\TAC.Dto\TAC.Dto.csproj" />
+  </ItemGroup>
+
+</Project>
