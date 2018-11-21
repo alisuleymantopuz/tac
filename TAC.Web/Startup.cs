@@ -61,6 +61,22 @@ namespace TAC.Web
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
+            #region EFWithSeeding
+            using (var serviceScope = app.ApplicationServices.GetService<IServiceScopeFactory>().CreateScope())
+            {
+                var context = serviceScope.ServiceProvider.GetRequiredService<AppDbContext>();
+                context.Database.EnsureCreated();
+            }
+            #endregion
+
+            #region Swagger
+            app.UseSwagger();
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "TAC [Truck Availability Checker] V1");
+            });
+            #endregion
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -70,42 +86,6 @@ namespace TAC.Web
                 app.UseExceptionHandler("/Error");
             }
 
-            using (var serviceScope = app.ApplicationServices.GetService<IServiceScopeFactory>().CreateScope())
-            {
-                var context = serviceScope.ServiceProvider.GetRequiredService<AppDbContext>();
-                context.Database.EnsureCreated();
-            }
-
-            app.UseExceptionHandler(
-               builder =>
-               {
-                   builder.Run(
-                       async context =>
-                       {
-                           context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
-                           context.Response.Headers.Add("Access-Control-Allow-Origin", "*");
-
-                           var error = context.Features.Get<IExceptionHandlerFeature>();
-                           if (error != null)
-                           {
-                               context.Response.Headers.Add("Application-Error", Strings.RemoveAllNonPrintableCharacters(error.Error.Message));
-                               context.Response.Headers.Add("access-control-expose-headers", "Application-Error");
-                               await context.Response.WriteAsync(error.Error.Message).ConfigureAwait(false);
-                           }
-                       });
-               });
-
-            app.UseSwaggerUI(c =>
-            {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "TAC [Truck Availability Checker] V1");
-            });
-
-            // Enable middleware to serve generated Swagger as a JSON endpoint.
-            app.UseSwagger();
-            app.UseAuthentication();
-            app.UseDefaultFiles();
-            app.UseStaticFiles();
-
             app.UseMvc(routes =>
             {
                 routes.MapRoute(
@@ -113,6 +93,10 @@ namespace TAC.Web
                     template: "{controller}/{action=Index}/{id?}");
             });
 
+
+            #region Spa
+            app.UseStaticFiles();
+            app.UseSpaStaticFiles();
             app.UseSpa(spa =>
             {
                 spa.Options.SourcePath = "App";
@@ -122,6 +106,28 @@ namespace TAC.Web
                     spa.UseReactDevelopmentServer(npmScript: "start");
                 }
             });
+            #endregion
+
+            #region ExteptionHandler
+            app.UseExceptionHandler(
+                   builder =>
+                   {
+                       builder.Run(
+                           async context =>
+                           {
+                               context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+                               context.Response.Headers.Add("Access-Control-Allow-Origin", "*");
+
+                               var error = context.Features.Get<IExceptionHandlerFeature>();
+                               if (error != null)
+                               {
+                                   context.Response.Headers.Add("Application-Error", Strings.RemoveAllNonPrintableCharacters(error.Error.Message));
+                                   context.Response.Headers.Add("access-control-expose-headers", "Application-Error");
+                                   await context.Response.WriteAsync(error.Error.Message).ConfigureAwait(false);
+                               }
+                           });
+                   });
+            #endregion
         }
     }
 }
