@@ -1,8 +1,7 @@
 ﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using TAC.Domain.Infrastructure;
+using Microsoft.Extensions.Hosting;
 
 namespace TAC.Web.IntegrationTests
 {
@@ -12,17 +11,8 @@ namespace TAC.Web.IntegrationTests
         {
             builder.ConfigureServices(services =>
             {
-                // Create a new service provider.
-                var serviceProvider = new ServiceCollection()
-                    .AddEntityFrameworkInMemoryDatabase()
-                    .BuildServiceProvider();
-
-                // Add a database context (AppDbContext) using an in-memory database for testing.
-                services.AddDbContext<AppDbContext>(options =>
-                {
-                    options.UseInMemoryDatabase("InMemoryAppDb");
-                    options.UseInternalServiceProvider(serviceProvider);
-                });
+                services.Remove(new ServiceDescriptor(typeof(VehicleAvailabilityCheckerService), typeof(IHostedService), ServiceLifetime.Singleton));
+                services.Remove(new ServiceDescriptor(typeof(VehicleStatusUpdateMachineryService), typeof(IHostedService), ServiceLifetime.Singleton));
             });
         }
     }
